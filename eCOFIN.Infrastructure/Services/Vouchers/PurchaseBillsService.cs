@@ -9,7 +9,7 @@ using System.Data;
 
 namespace eCOFIN.Infrastructure.Services.Vouchers
 {
-    public class PurchaseBillsService : IPurchaseBillsService
+    public partial class PurchaseBillsService : IPurchaseBillsService
     {
         private readonly BilzFinDbContext _context;
         private readonly ILogger<PurchaseBillsService> _logger;
@@ -565,6 +565,7 @@ namespace eCOFIN.Infrastructure.Services.Vouchers
             {
                 var now = DateTime.UtcNow;
                 var detailsDto = request.Details ?? new List<PurjDetailsDto>();
+                var netBill = await NormalizePurchaseBillAsync(request);
 
                 if (string.IsNullOrWhiteSpace(request.VoucherData.CtrlOnHoldNo))
                 {
@@ -677,12 +678,12 @@ namespace eCOFIN.Infrastructure.Services.Vouchers
                         Podate = bill.PODate,
                         Billamount = bill.BillAmount,
                         Billamountadjusted = 0m,
-                        Billbalance = bill.BillAmount,
+                        Billbalance = netBill,
                         Dbcrflag = "C",
                         Tdsdedamount = bill.DeduAmount,
                         Tdsamount = bill.TDSAmount,
                         Tdscode = bill.TDSCode,
-                        Releaseamt = bill.BillAmount,
+                        Releaseamt = netBill,
                         VchrDate = request.VoucherData.VoucherDate,
                         VchrType = request.VoucherData.VoucherType,
                         VchrSyscategory = request.VoucherData.VoucherSysCategory,
@@ -765,6 +766,7 @@ namespace eCOFIN.Infrastructure.Services.Vouchers
             {
                 var now = DateTime.UtcNow;
                 var detailsDto = request.Details ?? new List<PurjDetailsDto>();
+                var netBill = await NormalizePurchaseBillAsync(request);
                 if (string.IsNullOrWhiteSpace(request.VoucherData.CtrlOnHoldNo))
                 {
                     request.VoucherData.CtrlOnHoldNo = await GenerateVoucherNoInTxAsync(
@@ -888,12 +890,12 @@ namespace eCOFIN.Infrastructure.Services.Vouchers
                         Podate = bill.PODate,
                         Billamount = bill.BillAmount,
                         Billamountadjusted = 0m,
-                        Billbalance = bill.BillAmount,
+                        Billbalance = netBill,
                         Dbcrflag = "C",
                         Tdsdedamount = bill.DeduAmount,
                         Tdsamount = bill.TDSAmount,
                         Tdscode = bill.TDSCode,
-                        Releaseamt = bill.BillAmount,
+                        Releaseamt = netBill,
                         VchrDate = request.VoucherData.VoucherDate,
                         VchrType = request.VoucherData.VoucherType,
                         VchrSyscategory = request.VoucherData.VoucherSysCategory,
@@ -1539,6 +1541,131 @@ namespace eCOFIN.Infrastructure.Services.Vouchers
 
             foreach (var entry in stale)
                 entry.State = EntityState.Detached;
+        }
+        /// <summary>
+        /// Corrects and validates the payload in place, and returns the NET bill
+        /// amount for Billbalance / Releaseamt.
+        ///
+        /// Everything here is derived from the database, not from the browser.
+        /// </summary>
+        private async Task<decimal> NormalizePurchaseBillAsync(PurchaseBillsRequestDto request)
+        {
+            var details = request.Details ?? new List<PurjDetailsDto>();
+            var bill = request.BillDetails;
+
+            var groupAccount = request.VoucherData?.BankCode?.Trim();      // e.g. L061300
+            var vendorCode = request.VoucherData?.BankAccount?.Trim();     // e.g. DEB034
+
+            /* ---- 1. Undo the vendor / account inversion --------------------
+               The component sends bankBlock.bankAccount (the vendor) as
+               accountCode with a null subAccountCode. Detect that and put each
+               value in its proper column. */
+            if (!string.IsNullOrWhiteSpace(groupAccount) && !string.IsNullOrWhiteSpace(vendorCode))
+            {
+                foreach (var line in details)
+                {
+                    var isCredit = string.Equals(line.DbCrFlag, "C", StringComparison.OrdinalIgnoreCase);
+                    var accIsVendor = string.Equals(line.AccountCode?.Trim(), vendorCode,
+                                                    StringComparison.OrdinalIgnoreCase);
+
+                    if (isCredit && accIsVendor && string.IsNullOrWhiteSpace(line.SubAccountCode))
+                    {
+                        line.AccountCode = groupAccount;
+                        line.SubAccountCode = vendorCode;
+
+                        _logger.LogWarning(
+                            "Purchase bill {OnHold}: vendor credit line corrected - accountCode was "
+                          + "'{Wrong}' (a vendor code); rewritten as {Account}/{Vendor}.",
+                            request.VoucherData?.CtrlOnHoldNo, vendorCode, groupAccount, vendorCode);
+                    }
+                }
+            }
+
+            if (bill == null) return 0m;
+
+            /* ---- 2. Derive TDS from cfn_tds, never from the browser --------
+               Coreman reads the rate:
+                   SELECT isnull(CFN_TDS.TDSPERC, 0) FROM CFN_TDS WHERE TDSCODE = ?
+               The UI lets TDS Amount be typed directly, which is how 2,000 was
+               saved with no taxable base behind it. */
+            var grossBill = bill.BillAmount ?? 0m;
+            var tdsCode = bill.TDSCode?.Trim();
+            var tdsAmount = bill.TDSAmount ?? 0m;
+
+            if (!string.IsNullOrWhiteSpace(tdsCode))
+            {
+                var tdsRow = await _context.CfnTds.AsNoTracking()
+                    .Where(t => t.Tdscode == tdsCode)
+                    .Select(t => new { t.Tdsperc, t.Accountcode })
+                    .FirstOrDefaultAsync();
+
+                if (tdsRow == null)
+                    throw new ApplicationException($"TDS code '{tdsCode}' does not exist.");
+
+                var pct = tdsRow.Tdsperc ?? 0m;
+
+                // Taxable base. When the form left it blank, fall back to the
+                // sum of the non-tax debit lines - which is what the base is.
+                var baseAmount = bill.DeduAmount ?? 0m;
+                if (baseAmount <= 0m)
+                {
+                    baseAmount = details
+                        .Where(d => string.Equals(d.DbCrFlag, "D", StringComparison.OrdinalIgnoreCase)
+                                 && !IsTaxAccount(d.AccountCode))
+                        .Sum(d => d.DrCrAmount ?? 0m);
+
+                    bill.DeduAmount = baseAmount;   // persisted to cfn_bill.tdsdedamount
+                }
+
+                var derived = Math.Round(baseAmount * pct / 100m, 2, MidpointRounding.AwayFromZero);
+
+                if (tdsAmount != derived)
+                {
+                    _logger.LogWarning(
+                        "Purchase bill {OnHold}: TDS recalculated. Posted {Posted}, derived {Derived} "
+                      + "({Base} x {Pct}% for code {Code}).",
+                        request.VoucherData?.CtrlOnHoldNo, tdsAmount, derived, baseAmount, pct, tdsCode);
+                }
+
+                tdsAmount = derived;
+                bill.TDSAmount = derived;
+            }
+            else
+            {
+                tdsAmount = 0m;
+                bill.TDSAmount = 0m;
+            }
+
+            /* ---- 3. The voucher must balance ------------------------------- */
+            var debit = details
+                .Where(d => string.Equals(d.DbCrFlag, "D", StringComparison.OrdinalIgnoreCase))
+                .Sum(d => d.DrCrAmount ?? 0m);
+
+            var credit = details
+                .Where(d => string.Equals(d.DbCrFlag, "C", StringComparison.OrdinalIgnoreCase))
+                .Sum(d => d.DrCrAmount ?? 0m);
+
+            if (Math.Round(debit, 2) != Math.Round(credit, 2))
+                throw new ApplicationException(
+                    $"Voucher does not balance: debit {debit:N2} against credit {credit:N2}.");
+
+            if (grossBill > 0m && Math.Round(grossBill, 2) != Math.Round(debit, 2))
+                throw new ApplicationException(
+                    $"Bill amount {grossBill:N2} does not equal total debit {debit:N2}.");
+
+            /* ---- 4. Net payable, for Billbalance and Releaseamt ------------- */
+            return grossBill - tdsAmount;
+        }
+
+        /// <summary>
+        /// GST / tax receivable accounts, excluded from the TDS taxable base.
+        /// A070211 CGST, A070212 SGST, A070213 IGST - the same accounts used by
+        /// OnHoldMultipleGINAsync when it splits GST out.
+        /// </summary>
+        private static bool IsTaxAccount(string? accountCode)
+        {
+            var code = accountCode?.Trim().ToUpperInvariant();
+            return code is "A070211" or "A070212" or "A070213";
         }
     }
 }
