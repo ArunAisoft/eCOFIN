@@ -1,0 +1,198 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace eCOFIN.Infrastructure;
+
+[Keyless]
+public partial class CfnVTravelregister
+{
+    [Column("accperiod")]
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? Accperiod { get; set; }
+
+    [Column("onholdno")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string Onholdno { get; set; } = null!;
+
+    [Column("vouchernumber")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Vouchernumber { get; set; }
+
+    [Column("voucherdate", TypeName = "datetime")]
+    public DateTime Voucherdate { get; set; }
+
+    [Column("vchrtype")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string Vchrtype { get; set; } = null!;
+
+    [Column("vchrrefnumber")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Vchrrefnumber { get; set; }
+
+    [Column("vchrrefdate", TypeName = "datetime")]
+    public DateTime? Vchrrefdate { get; set; }
+
+    [Column("narration")]
+    [StringLength(400)]
+    [Unicode(false)]
+    public string? Narration { get; set; }
+
+    [Column("category")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Category { get; set; }
+
+    [Column("syscategory")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Syscategory { get; set; }
+
+    [Column("totalamount", TypeName = "numeric(14, 2)")]
+    public decimal? Totalamount { get; set; }
+
+    [Column("traveltype")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Traveltype { get; set; }
+
+    [Column("travelamount", TypeName = "numeric(14, 2)")]
+    public decimal? Travelamount { get; set; }
+
+    [Column("localconveyance", TypeName = "numeric(10, 2)")]
+    public decimal? Localconveyance { get; set; }
+
+    [Column("hotel", TypeName = "numeric(10, 2)")]
+    public decimal? Hotel { get; set; }
+
+    [Column("sundries", TypeName = "numeric(10, 2)")]
+    public decimal? Sundries { get; set; }
+
+    [Column("entertainment", TypeName = "numeric(10, 2)")]
+    public decimal? Entertainment { get; set; }
+
+    [Column("traveltotal", TypeName = "numeric(14, 2)")]
+    public decimal? Traveltotal { get; set; }
+
+    [Column("status")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Status { get; set; }
+
+    [Column("cancelflag")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? Cancelflag { get; set; }
+
+    [Column("locationcode")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Locationcode { get; set; }
+
+    [Column("username")]
+    [StringLength(30)]
+    [Unicode(false)]
+    public string? Username { get; set; }
+
+    [Column("createdon", TypeName = "datetime")]
+    public DateTime? Createdon { get; set; }
+
+    [Column("lastupdate", TypeName = "datetime")]
+    public DateTime? Lastupdate { get; set; }
+
+    [Column("logextract")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? Logextract { get; set; }
+
+    [Column("trglocationcode")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Trglocationcode { get; set; }
+
+    [Column("logextracttype")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? Logextracttype { get; set; }
+
+    [Column("accountcode")]
+    [StringLength(10)]
+    [Unicode(false)]
+    public string Accountcode { get; set; } = null!;
+
+    [Column("description")]
+    [StringLength(100)]
+    [Unicode(false)]
+    public string Description { get; set; } = null!;
+
+    [Column("lineparticulars")]
+    [StringLength(100)]
+    [Unicode(false)]
+    public string? Lineparticulars { get; set; }
+
+    [Column("costcentrecode")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Costcentrecode { get; set; }
+
+    [Column("subaccountcode")]
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? Subaccountcode { get; set; }
+
+    [Column("costtype")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Costtype { get; set; }
+
+    [Column("productcode")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Productcode { get; set; }
+
+    [Column("expensetype")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Expensetype { get; set; }
+
+    [Column("employeecode")]
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? Employeecode { get; set; }
+
+    [Column("segcode2")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Segcode2 { get; set; }
+
+    [Column("referencenumber")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Referencenumber { get; set; }
+
+    [Column("referencedate", TypeName = "datetime")]
+    public DateTime? Referencedate { get; set; }
+
+    [Column("automated")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? Automated { get; set; }
+
+    [Column("dbcrflag")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string Dbcrflag { get; set; } = null!;
+
+    [Column("dbcramount", TypeName = "numeric(14, 2)")]
+    public decimal Dbcramount { get; set; }
+
+    [Column("linenumber", TypeName = "numeric(3, 0)")]
+    public decimal Linenumber { get; set; }
+}

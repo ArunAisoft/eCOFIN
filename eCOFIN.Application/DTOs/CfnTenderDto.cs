@@ -1,0 +1,75 @@
+namespace eCOFIN.Application.DTOs
+{
+    public class CfnTenderDto
+    {
+        public string CtrlOnholdno { get; set; }
+        public string BidCurrency { get; set; }
+        public string CommContactperson { get; set; }
+        public string CommEmail { get; set; }
+        public string CommFaxno { get; set; }
+        public string CommGrams { get; set; }
+        public string CommTelephone1 { get; set; }
+        public string CommTelephone2 { get; set; }
+        public string CommTelexno { get; set; }
+        public string CtrlAccperiod { get; set; }
+        public string CtrlCancelflag { get; set; }
+        public DateTime? CtrlCreatedon { get; set; }
+        public DateTime? CtrlLastupdate { get; set; }
+        public string CtrlLocationcode { get; set; }
+        public string CtrlLogextract { get; set; }
+        public string CtrlLogextracttype { get; set; }
+        public string CtrlStatus { get; set; }
+        public string CtrlTrglocationcode { get; set; }
+        public string CtrlUsername { get; set; }
+        public DateTime? DeliveryDt { get; set; }
+        public string Description { get; set; }
+        public string Despatchmode { get; set; }
+        public DateTime? Duedate { get; set; }
+        public string Employeecode { get; set; }
+        public string Favourof { get; set; }
+        public string Locationcode { get; set; }
+        public decimal? NoOfCopies { get; set; }
+        public DateTime? OfferDate { get; set; }
+        public string OfferRefrno { get; set; }
+        public string OfferSentto { get; set; }
+        public DateTime? OpeningResultdate { get; set; }
+        public DateTime? Openingdate { get; set; }
+        public string OrdrctrlOnholdno { get; set; }
+        public string Payableat { get; set; }
+        public string Paymentmode { get; set; }
+        public string PerfGuarantee { get; set; }
+        public string PerfType { get; set; }
+        public string PriceBasis { get; set; }
+        public string Productcode { get; set; }
+        public string Referenceno { get; set; }
+        public DateTime? RefrDate { get; set; }
+        public string Remarks { get; set; }
+        public string Remindersent { get; set; }
+        public DateTime? RequestDate { get; set; }
+        public string Salescustomercode { get; set; }
+        public string Salescustomername { get; set; }
+        public string ScrutinyType { get; set; }
+        public string SecurityDeposit { get; set; }
+        public decimal? SecurityPerc { get; set; }
+        public string SecurityType { get; set; }
+        public DateTime? SpecLastdate { get; set; }
+        public DateTime? SpecReceivedon { get; set; }
+        public DateTime? StartonDate { get; set; }
+        public DateTime? Submissiondate { get; set; }
+        public DateTime? TenderSentonDate { get; set; }
+        public string TenderSpecno { get; set; }
+        public string TenderStatus { get; set; }
+        public decimal? TenderValue { get; set; }
+        public string Tendercategory { get; set; }
+        public decimal? Tenderfee { get; set; }
+        public string Tenderno { get; set; }
+        public DateTime? ValidityDate { get; set; }
+        public string VchrCategory { get; set; }
+        public DateTime? VchrDate { get; set; }
+        public string VchrNarration { get; set; }
+        public DateTime? VchrRefdate { get; set; }
+        public string VchrRefnumber { get; set; }
+        public string VchrSyscategory { get; set; }
+        public string VchrType { get; set; }
+    }
+}

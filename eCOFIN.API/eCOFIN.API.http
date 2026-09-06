@@ -1,0 +1,6 @@
+@eCOFIN.API_HostAddress = http://localhost:5145
+
+GET {{eCOFIN.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

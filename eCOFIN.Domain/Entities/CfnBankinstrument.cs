@@ -1,0 +1,120 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace eCOFIN.Infrastructure;
+
+[PrimaryKey("Accountcode", "Instrumentbookno")]
+[Table("CFN_BANKINSTRUMENT")]
+public partial class CfnBankinstrument
+{
+    [Column("BANKCODE")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string Bankcode { get; set; } = null!;
+
+    [Key]
+    [Column("ACCOUNTCODE")]
+    [StringLength(10)]
+    [Unicode(false)]
+    public string Accountcode { get; set; } = null!;
+
+    [Key]
+    [Column("INSTRUMENTBOOKNO", TypeName = "numeric(5, 0)")]
+    public decimal Instrumentbookno { get; set; }
+
+    [Column("INSTRUMENTCATEGORY")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Instrumentcategory { get; set; }
+
+    [Column("INSTRUMENTTYPE")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? Instrumenttype { get; set; }
+
+    [Column("STARTINGSERIALNO", TypeName = "numeric(10, 0)")]
+    public decimal Startingserialno { get; set; }
+
+    [Column("ENDINGSERIALNO", TypeName = "numeric(10, 0)")]
+    public decimal Endingserialno { get; set; }
+
+    [Column("RUNNINGSERIALNO", TypeName = "numeric(10, 0)")]
+    public decimal Runningserialno { get; set; }
+
+    [Column("BOOKDESCRIPTION")]
+    [StringLength(100)]
+    [Unicode(false)]
+    public string? Bookdescription { get; set; }
+
+    [Column("INSTRUMENTLEAVES", TypeName = "numeric(10, 0)")]
+    public decimal? Instrumentleaves { get; set; }
+
+    [Column("ACTIVE_STATUS")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? ActiveStatus { get; set; }
+
+    [Column("CTRL_ONHOLDNO")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string CtrlOnholdno { get; set; } = null!;
+
+    [Column("CTRL_STATUS")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? CtrlStatus { get; set; }
+
+    [Column("CTRL_CANCELFLAG")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? CtrlCancelflag { get; set; }
+
+    [Column("CTRL_LOCATIONCODE")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? CtrlLocationcode { get; set; }
+
+    [Column("CTRL_ACCPERIOD")]
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? CtrlAccperiod { get; set; }
+
+    [Column("CTRL_USERNAME")]
+    [StringLength(30)]
+    [Unicode(false)]
+    public string? CtrlUsername { get; set; }
+
+    [Column("CTRL_CREATEDON", TypeName = "datetime")]
+    public DateTime? CtrlCreatedon { get; set; }
+
+    [Column("CTRL_LASTUPDATE", TypeName = "datetime")]
+    public DateTime? CtrlLastupdate { get; set; }
+
+    [Column("CTRL_LOGEXTRACT")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? CtrlLogextract { get; set; }
+
+    [Column("CTRL_TRGLOCATIONCODE")]
+    [StringLength(5)]
+    [Unicode(false)]
+    public string? CtrlTrglocationcode { get; set; }
+
+    [Column("CTRL_LOGEXTRACTTYPE")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? CtrlLogextracttype { get; set; }
+
+    [Column("CTRL_PREVREFR")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? CtrlPrevrefr { get; set; }
+
+    [Column("CTRL_NEXTREFRFLAG")]
+    [StringLength(1)]
+    [Unicode(false)]
+    public string? CtrlNextrefrflag { get; set; }
+}

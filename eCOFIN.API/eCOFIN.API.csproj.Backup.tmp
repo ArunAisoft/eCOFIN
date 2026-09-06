@@ -1,0 +1,150 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\AccCostPieceTabController.cs" />
+    <Compile Remove="Controllers\AccDcnoteMasterController.cs" />
+    <Compile Remove="Controllers\AccPaymentPaymentController.cs" />
+    <Compile Remove="Controllers\AccVatTypeMasterController.cs" />
+    <Compile Remove="Controllers\AutoDatapullController.cs" />
+    <Compile Remove="Controllers\CfnAccncalender2Controller.cs" />
+    <Compile Remove="Controllers\CfnAccncalenderController.cs" />
+    <Compile Remove="Controllers\CfnAccountController.cs" />
+    <Compile Remove="Controllers\CfnAccrepcontbController.cs" />
+    <Compile Remove="Controllers\CfnAgeingcfgController.cs" />
+    <Compile Remove="Controllers\CfnAgeinghdrController.cs" />
+    <Compile Remove="Controllers\CfnAmtInWordController.cs" />
+    <Compile Remove="Controllers\CfnAutojournalController.cs" />
+    <Compile Remove="Controllers\CfnBankbookController.cs" />
+    <Compile Remove="Controllers\CfnBankController.cs" />
+    <Compile Remove="Controllers\CfnBankdatumController.cs" />
+    <Compile Remove="Controllers\CfnBankdepositController.cs" />
+    <Compile Remove="Controllers\CfnBankdocumentController.cs" />
+    <Compile Remove="Controllers\CfnBankpaymentController.cs" />
+    <Compile Remove="Controllers\CfnBankreceiptController.cs" />
+    <Compile Remove="Controllers\CfnBilladjustmentController.cs" />
+    <Compile Remove="Controllers\CfnBillpassinghdrController.cs" />
+    <Compile Remove="Controllers\CfnBnkretirementController.cs" />
+    <Compile Remove="Controllers\CfnBscsexportController.cs" />
+    <Compile Remove="Controllers\CfnBtlcustomerorderController.cs" />
+    <Compile Remove="Controllers\CfnBtlordoaController.cs" />
+    <Compile Remove="Controllers\CfnBudgetController.cs" />
+    <Compile Remove="Controllers\CfnBudgetsanctionController.cs" />
+    <Compile Remove="Controllers\CfnBudgetstackController.cs" />
+    <Compile Remove="Controllers\CfnCashbookController.cs" />
+    <Compile Remove="Controllers\CfnCashpaymentController.cs" />
+    <Compile Remove="Controllers\CfnCashreceiptController.cs" />
+    <Compile Remove="Controllers\CfnCfparameterController.cs" />
+    <Compile Remove="Controllers\CfnChequerequestController.cs" />
+    <Compile Remove="Controllers\CfnCompanyController.cs" />
+    <Compile Remove="Controllers\CfnConaccfgController.cs" />
+    <Compile Remove="Controllers\CfnConloccfgController.cs" />
+    <Compile Remove="Controllers\CfnContraController.cs" />
+    <Compile Remove="Controllers\CfnCostcentreController.cs" />
+    <Compile Remove="Controllers\CfnCreditheaderController.cs" />
+    <Compile Remove="Controllers\CfnCreditnoteController.cs" />
+    <Compile Remove="Controllers\CfnCurrencyController.cs" />
+    <Compile Remove="Controllers\CfnCustomerController.cs" />
+    <Compile Remove="Controllers\CfnDealerController.cs" />
+    <Compile Remove="Controllers\CfnDebitnoteController.cs" />
+    <Compile Remove="Controllers\CfnDepartmentController.cs" />
+    <Compile Remove="Controllers\CfnEmployeeController.cs" />
+    <Compile Remove="Controllers\CfnEnquiryController.cs" />
+    <Compile Remove="Controllers\CfnFinancialinstController.cs" />
+    <Compile Remove="Controllers\CfnFinancialyear2Controller.cs" />
+    <Compile Remove="Controllers\CfnFinancialyearController.cs" />
+    <Compile Remove="Controllers\CfnFyrefcontrolController.cs" />
+    <Compile Remove="Controllers\CfnGenhelpController.cs" />
+    <Compile Remove="Controllers\CfnGeographyController.cs" />
+    <Compile Remove="Controllers\CfnGoodsinvchController.cs" />
+    <Compile Remove="Controllers\CfnGoodsoutvchController.cs" />
+    <Compile Remove="Controllers\CfnHierarchyController.cs" />
+    <Compile Remove="Controllers\CfnInterbranchController.cs" />
+    <Compile Remove="Controllers\CfnInvcprncfgController.cs" />
+    <Compile Remove="Controllers\CfnInvoiceController.cs" />
+    <Compile Remove="Controllers\CfnInvorderrelatedController.cs" />
+    <Compile Remove="Controllers\CfnInvreceiptController.cs" />
+    <Compile Remove="Controllers\CfnInvregcfgController.cs" />
+    <Compile Remove="Controllers\CfnInvvchrhistController.cs" />
+    <Compile Remove="Controllers\CfnInvvchrtypeController.cs" />
+    <Compile Remove="Controllers\CfnJournalController.cs" />
+    <Compile Remove="Controllers\CfnLevelController.cs" />
+    <Compile Remove="Controllers\CfnLocationController.cs" />
+    <Compile Remove="Controllers\CfnMemovoucherController.cs" />
+    <Compile Remove="Controllers\CfnMrpbillheaderController.cs" />
+    <Compile Remove="Controllers\CfnOrderpricingfactorController.cs" />
+    <Compile Remove="Controllers\CfnPackageController.cs" />
+    <Compile Remove="Controllers\CfnPhystockvchController.cs" />
+    <Compile Remove="Controllers\CfnPlgroupController.cs" />
+    <Compile Remove="Controllers\CfnPoenquiryController.cs" />
+    <Compile Remove="Controllers\CfnPoquotationController.cs" />
+    <Compile Remove="Controllers\CfnPoratecontractController.cs" />
+    <Compile Remove="Controllers\CfnPostagetrackController.cs" />
+    <Compile Remove="Controllers\CfnProductController.cs" />
+    <Compile Remove="Controllers\CfnPurchasejnlController.cs" />
+    <Compile Remove="Controllers\CfnQuerytaskController.cs" />
+    <Compile Remove="Controllers\CfnQuotationController.cs" />
+    <Compile Remove="Controllers\CfnRectemplateController.cs" />
+    <Compile Remove="Controllers\CfnRecurringvchrController.cs" />
+    <Compile Remove="Controllers\CfnReferencectrlController.cs" />
+    <Compile Remove="Controllers\CfnRepageingtemplateController.cs" />
+    <Compile Remove="Controllers\CfnRepcontbController.cs" />
+    <Compile Remove="Controllers\CfnReportcontrolController.cs" />
+    <Compile Remove="Controllers\CfnRequisitionController.cs" />
+    <Compile Remove="Controllers\CfnSalescustomerController.cs" />
+    <Compile Remove="Controllers\CfnSalesindentController.cs" />
+    <Compile Remove="Controllers\CfnSalevoucherController.cs" />
+    <Compile Remove="Controllers\CfnSerialamendmentController.cs" />
+    <Compile Remove="Controllers\CfnServicenoteController.cs" />
+    <Compile Remove="Controllers\CfnSpecificationController.cs" />
+    <Compile Remove="Controllers\CfnTaskController.cs" />
+    <Compile Remove="Controllers\CfnTdController.cs" />
+    <Compile Remove="Controllers\CfnTdsaccountslnoController.cs" />
+    <Compile Remove="Controllers\CfnTendercompetitorController.cs" />
+    <Compile Remove="Controllers\CfnTenderController.cs" />
+    <Compile Remove="Controllers\CfnTenderdeposithdController.cs" />
+    <Compile Remove="Controllers\CfnTermController.cs" />
+    <Compile Remove="Controllers\CfnTravelsancController.cs" />
+    <Compile Remove="Controllers\CfnTravelvoucherController.cs" />
+    <Compile Remove="Controllers\CfnTrLinkController.cs" />
+    <Compile Remove="Controllers\CfnUserController.cs" />
+    <Compile Remove="Controllers\CfnVchrgroupController.cs" />
+    <Compile Remove="Controllers\CfnVendorController.cs" />
+    <Compile Remove="Controllers\CfnViewController.cs" />
+    <Compile Remove="Controllers\CfnVoucherheaderController.cs" />
+    <Compile Remove="Controllers\CfnVoucherobjectController.cs" />
+    <Compile Remove="Controllers\CfnWarehouseController.cs" />
+    <Compile Remove="Controllers\CodeEntryAccountController.cs" />
+    <Compile Remove="Controllers\CodeTypeController.cs" />
+    <Compile Remove="Controllers\CustomerController.cs" />
+    <Compile Remove="Controllers\EinvMainController.cs" />
+    <Compile Remove="Controllers\GinMasterController.cs" />
+    <Compile Remove="Controllers\GinPriceDomesticController.cs" />
+    <Compile Remove="Controllers\GinPriceImportController.cs" />
+    <Compile Remove="Controllers\InvMainController.cs" />
+    <Compile Remove="Controllers\ObiCodeEntryController.cs" />
+    <Compile Remove="Controllers\PersonelController.cs" />
+    <Compile Remove="Controllers\StoAnnexMasterController.cs" />
+    <Compile Remove="Controllers\SupplierDetailController.cs" />
+    <Compile Remove="Controllers\VendcodeController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\eCOFIN.Application\eCOFIN.Application.csproj" />
+    <ProjectReference Include="..\eCOFIN.Infrastructure\eCOFIN.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
