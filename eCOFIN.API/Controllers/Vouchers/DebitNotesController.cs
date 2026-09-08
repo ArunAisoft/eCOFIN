@@ -128,5 +128,62 @@ namespace eCOFIN.API.Controllers.Vouchers
                 return StatusCode(500, new { success = false, status = 500, message = "An unexpected error occurred while saving the Debit Note.", error = ex.InnerException?.Message ?? ex.Message });
             }
         }
+
+        [HttpPost("PostMultipleDebitNotes")]
+        public async Task<IActionResult> PostMultipleDebitNotes([FromBody] PostMultipleRequest request)
+        {
+            try
+            {
+                if (request == null)
+                    return Ok(new { success = false, status = 201, message = "Request body is required." });
+
+                if (request.OnHoldNumbers == null || !request.OnHoldNumbers.Any())
+                    return Ok(new { success = false, status = 201, message = "At least one OnHold number is required." });
+
+                var result = await _debitnotesService.PostMultipleDebitNotesAsync(request.OnHoldNumbers, request.AccountingPeriod, request.Username, request.LocationCode).ConfigureAwait(false);
+
+                if (result.HasFailures && result.Posted.Any())
+                    return Ok(new
+                    {
+                        success = true,
+                        status = 200,
+                        message = $"{result.Posted.Count} voucher(s) posted. {result.Failed.Count} failed — see 'failed' for details.",
+                        total = request.OnHoldNumbers.Count,
+                        posted = result.Posted.Count,
+                        failed = result.Failed.Count,
+                        data = result.Posted,
+                        failures = result.Failed
+                    });
+
+                if (!result.Posted.Any())
+                    return Ok(new
+                    {
+                        success = false,
+                        status = 201,
+                        message = "No vouchers were posted. All failed — see 'failed' for details.",
+                        total = request.OnHoldNumbers.Count,
+                        posted = 0,
+                        failed = result.Failed.Count,
+                        failures = result.Failed
+                    });
+
+                return Ok(new { success = true, status = 200, message = $"All {result.Posted.Count} voucher(s) posted successfully.", total = request.OnHoldNumbers.Count, posted = result.Posted.Count, failed = 0, data = result.Posted });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "DB error posting multiple Debit Notes.");
+                return StatusCode(500, new { success = false, status = 500, message = "Database conflict occurred while posting Debit Notes.", error = dbEx.InnerException?.Message ?? dbEx.Message });
+            }
+            catch (ApplicationException appEx)
+            {
+                _logger.LogError(appEx, "Application error posting multiple Debit Notes.");
+                return StatusCode(500, new { success = false, status = 500, message = "Application error occurred while posting Debit Notes.", error = appEx.InnerException?.Message ?? appEx.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error posting multiple Debit Notes.");
+                return StatusCode(500, new { success = false, status = 500, message = "An unexpected error occurred while posting Debit Notes.", error = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
     }
 }

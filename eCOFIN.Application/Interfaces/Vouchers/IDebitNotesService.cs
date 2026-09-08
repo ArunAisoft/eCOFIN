@@ -10,5 +10,6 @@
         Task<DebitNoteWithDetailsDto> GetDebitNoteWithDetailsAsync(string onHoldNo);
         Task<string> OnHoldDebitNoteAsync(DebitNotesRequestDto request);
         Task<string> PostDebitNoteAsync(DebitNotesRequestDto request);
+        Task<PostMultipleResult> PostMultipleDebitNotesAsync(List<string> onHoldNumbers, string accountingPeriod, string username, string locationCode);
     }
 }

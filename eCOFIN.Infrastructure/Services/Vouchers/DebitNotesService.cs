@@ -674,6 +674,114 @@ namespace eCOFIN.Infrastructure.Services.Vouchers
             }
         }
 
+        public async Task<PostMultipleResult> PostMultipleDebitNotesAsync(List<string> onHoldNumbers, string accountingPeriod, string username, string locationCode)
+        {
+            if (onHoldNumbers == null || !onHoldNumbers.Any())
+                throw new ApplicationException("No OnHold numbers provided.");
+
+            var result = new PostMultipleResult();
+
+            foreach (var onHoldNo in onHoldNumbers.Where(x => !string.IsNullOrWhiteSpace(x)))
+            {
+                await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+                try
+                {
+                    var now = DateTime.UtcNow;
+                    var header = await _context.CfnDebitnotes.FirstOrDefaultAsync(x => x.CtrlOnholdno == onHoldNo);
+
+                    if (header == null)
+                    {
+                        result.Failed.Add(new PostMultipleFailure { OnHoldNo = onHoldNo, Reason = "OnHold header not found in DB." });
+                        await tx.RollbackAsync();
+                        continue;
+                    }
+
+                    if (header.CtrlStatus == "Post")
+                    {
+                        _logger.LogWarning("OnHold {OnHoldNo} already posted — skipped.", onHoldNo);
+                        result.Failed.Add(new PostMultipleFailure { OnHoldNo = onHoldNo, Reason = "Already posted." });
+                        await tx.RollbackAsync();
+                        continue;
+                    }
+
+                    var voucherType = header.VchrType;
+                    var voucherDate = header.VchrDate;
+                    var voucherAccPeriod = header.CtrlAccperiod ?? accountingPeriod;
+
+                    if (string.IsNullOrWhiteSpace(voucherType))
+                    {
+                        result.Failed.Add(new PostMultipleFailure { OnHoldNo = onHoldNo, Reason = "VoucherType missing on OnHold header." });
+                        await tx.RollbackAsync();
+                        continue;
+                    }
+
+                    var voucherNo = await GenerateVoucherNoInTxAsync(accountingPeriod, voucherType, voucherDate, isOnHold: false);
+
+                    header.VchrNumber = voucherNo;
+                    header.CtrlStatus = "Post";
+                    header.CtrlAccperiod = accountingPeriod;
+                    header.CtrlUsername = username;
+                    header.CtrlLocationcode = locationCode;
+                    header.CtrlLastupdate = now;
+
+                    var details = await _context.CfnDebndetails.Where(x => x.CtrlOnholdno == onHoldNo).ToListAsync();
+                    var payments = await _context.CfnPayments.Where(x => x.CtrlOnholdno == onHoldNo).ToListAsync();
+                    var costDetails = await _context.CfnCostdetails.Where(x => x.CtrlOnholdno == onHoldNo).ToListAsync();
+                    var glDetails = await _context.CfnGldetails.Where(x => x.CtrlOnholdno == onHoldNo).ToListAsync();
+
+                    foreach (var payment in payments)
+                    {
+                        payment.VchrNumber = voucherNo;
+                        payment.CtrlStatus = "Post";
+                        payment.CtrlLastupdate = now;
+                    }
+
+                    foreach (var cost in costDetails)
+                        cost.CtrlStatus = "Post";
+
+                    foreach (var gl in glDetails)
+                    {
+                        gl.VchrNumber = voucherNo;
+                        gl.CtrlStatus = "Post";
+                        gl.CtrlLastupdate = now;
+                    }
+
+                    await _context.SaveChangesAsync();
+
+                    var lines = details.Select(d => new VoucherLineDto
+                    {
+                        AccountCode = d.Accountcode,
+                        SubAccountCode = d.Subaccountcode,
+                        DbCrFlag = d.Dbcrflag,
+                        DrCrAmount = d.Dbcramount
+                    }).ToList();
+
+                    await _ledgerRecalculationService.RecalculateLedgersAsync(voucherAccPeriod, lines, "ONHOLD");
+                    await _context.SaveChangesAsync();
+
+                    await _ledgerRecalculationService.RecalculateLedgersAsync(voucherAccPeriod, lines, "POST");
+                    await _context.SaveChangesAsync();
+
+                    await tx.CommitAsync();
+
+                    result.Posted.Add(voucherNo);
+                    _logger.LogInformation("OnHold {OnHoldNo} posted successfully as {VoucherNo}.", onHoldNo, voucherNo);
+                }
+                catch (Exception ex)
+                {
+                    await tx.RollbackAsync();
+                    _logger.LogError(ex, "Error posting OnHold {OnHoldNo} — skipped, continuing.", onHoldNo);
+                    result.Failed.Add(new PostMultipleFailure { OnHoldNo = onHoldNo, Reason = ex.Message });
+                }
+                finally
+                {
+                    _context.ChangeTracker.Clear();
+                }
+            }
+
+            return result;
+        }
+
         private void DetachVoucherEntries(string onHoldNo)
         {
             var stale = _context.ChangeTracker.Entries()
